@@ -26,7 +26,7 @@ func main() {
 	//config
 	shell.AddCmd(&ishell.Cmd{
 		Name: "config",
-		Help: "Configure your config.json [usage: config -github {key}",
+		Help: "Configure your config.json [usage: config -github {key}]",
 		Func: func(c *ishell.Context) {
 			if len(c.Args) > 0 {
 				if c.Args[0] == "-github" {
@@ -78,7 +78,7 @@ func main() {
 	//connect
 	shell.AddCmd(&ishell.Cmd{
 		Name: "connect",
-		Help: "connect to a bot using token [usage: login {token}]",
+		Help: "connect to a bot using token [usage: connect {token}]",
 		Func: func(c *ishell.Context) {
 			token := strings.Join(c.Args, " ")
 			discord, err = discordgo.New("Bot " + token)
@@ -97,7 +97,7 @@ func main() {
 	//invite
 	shell.AddCmd(&ishell.Cmd{
 		Name: "invite",
-		Help: "creates an invite to the server [usage: invite]",
+		Help: "creates an invite to the server",
 		Func: func(c *ishell.Context) {
 			if discord == nil {
 				log.Println("Please connect before!")
@@ -177,7 +177,7 @@ func main() {
 	//message
 	shell.AddCmd(&ishell.Cmd{
 		Name: "message",
-		Help: "send message to channel or user [usage: message -u username -d userDiscriminator -cid channelId -c channelName \"message\"]",
+		Help: "send message to channel or user [usage: message -u {username} -d {userDiscriminator} -cid {channelId} -c {channelName} \"message\"]",
 		Func: func(c *ishell.Context) {
 			if discord == nil {
 				log.Println("Please connect before!")
@@ -227,7 +227,7 @@ func main() {
 	//users
 	shell.AddCmd(&ishell.Cmd{
 		Name: "users",
-		Help: "shows all users [usage: users]",
+		Help: "shows all users",
 		Func: func(c *ishell.Context) {
 			if discord == nil {
 				log.Println("Please connect before!")
@@ -244,7 +244,7 @@ func main() {
 	//user
 	shell.AddCmd(&ishell.Cmd{
 		Name: "user",
-		Help: "Display informations of an user [usage: user -u username -d discriminator]",
+		Help: "Display informations of an user [usage: user -u {username} -d {discriminator}]",
 		Func: func(c *ishell.Context) {
 			if discord == nil {
 				log.Println("Please connect before!")
