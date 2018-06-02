@@ -14,14 +14,15 @@ func Pretty(data interface{}) {
 }
 
 //LoadConfig : Parse config file
-func LoadConfig(file string) Config {
+func LoadConfig(file string) (Config, error) {
 	var config Config
 	configFile, err := os.Open(file)
 	defer configFile.Close()
 	if err != nil {
 		fmt.Println(err.Error())
+		return Config{}, err
 	}
 	jsonParser := json.NewDecoder(configFile)
 	jsonParser.Decode(&config)
-	return config
+	return config, nil
 }

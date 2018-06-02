@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"strings"
 
@@ -11,12 +13,38 @@ import (
 // APIEndpoint : GitHub Search Code API Endpoint
 const APIEndpoint string = "https://api.github.com"
 
+//ConfigFilePath : Where the config.json is
+const ConfigFilePath string = "config.json"
+
 func main() {
 	shell := ishell.New()
 	shell.Println("Discord BOT - CLI")
 
 	var discord *discordgo.Session
 	var err error
+
+	//config
+	shell.AddCmd(&ishell.Cmd{
+		Name: "config",
+		Help: "Configure your config.json [usage: config -github {key}",
+		Func: func(c *ishell.Context) {
+			if len(c.Args) > 0 {
+				if c.Args[0] == "-github" {
+					key := c.Args[1]
+					config := Config{GitHubToken: key}
+					configJSON, _ := json.Marshal(config)
+					err := ioutil.WriteFile(ConfigFilePath, configJSON, 0644)
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					log.Println("Successfuly added your GitHub Key to " + ConfigFilePath)
+				}
+			} else {
+				log.Println("Provide correct arguments.")
+			}
+		},
+	})
 
 	//tokens
 	shell.AddCmd(&ishell.Cmd{
@@ -25,7 +53,12 @@ func main() {
 		Func: func(c *ishell.Context) {
 			page := strings.Join(c.Args, " ")
 
-			config := LoadConfig("config.json")
+			config, err := LoadConfig(ConfigFilePath)
+			if err != nil {
+				log.Println("Please correctly setup your config.json")
+				log.Println("You may use `config -github [yourkey]`")
+				return
+			}
 
 			repositories := GetRepositories(page, config.GitHubToken)
 			codeList := DownloadCode(repositories)
@@ -144,7 +177,7 @@ func main() {
 	//message
 	shell.AddCmd(&ishell.Cmd{
 		Name: "message",
-		Help: "send message to channel or user [usage: message -u username -d userDiscriminator -cid channelId -c channelName \"message\"",
+		Help: "send message to channel or user [usage: message -u username -d userDiscriminator -cid channelId -c channelName \"message\"]",
 		Func: func(c *ishell.Context) {
 			if discord == nil {
 				log.Println("Please connect before!")
@@ -188,6 +221,49 @@ func main() {
 			if channel != nil {
 				discord.ChannelMessageSend(channel.ID, message)
 			}
+		},
+	})
+
+	//users
+	shell.AddCmd(&ishell.Cmd{
+		Name: "users",
+		Help: "shows all users [usage: users]",
+		Func: func(c *ishell.Context) {
+			if discord == nil {
+				log.Println("Please connect before!")
+				return
+			}
+			users := FindAllUsers(discord)
+			log.Println("List of users:")
+			for _, member := range users {
+				log.Println(member.User.Username + " : #" + member.User.Discriminator)
+			}
+		},
+	})
+
+	//user
+	shell.AddCmd(&ishell.Cmd{
+		Name: "user",
+		Help: "Display informations of an user [usage: user -u username -d discriminator]",
+		Func: func(c *ishell.Context) {
+			if discord == nil {
+				log.Println("Please connect before!")
+				return
+			}
+			var user *discordgo.Member
+			if len(c.Args) > 0 {
+				if c.Args[0] == "-u" {
+					username := c.Args[1]
+					user = FindUserByUsername(discord, username)
+				} else if c.Args[0] == "-d" {
+					discriminator := c.Args[1]
+					user = FindUserByDiscriminator(discord, discriminator)
+				}
+			} else {
+				log.Println("Provide username or discriminator")
+				return
+			}
+			Pretty(user)
 		},
 	})
 

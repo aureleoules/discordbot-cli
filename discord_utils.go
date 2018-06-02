@@ -14,8 +14,9 @@ func FindFirstGuild(s *discordgo.Session) *discordgo.Guild {
 
 //FindFirstChannel : Look for first channel
 func FindFirstChannel(s *discordgo.Session) *discordgo.Channel {
-	firstChannelID := FindFirstGuild(s).ID
-	channel, _ := s.Channel(firstChannelID)
+	guildChannels := FindFirstGuild(s).Channels
+	channelID := guildChannels[0].ID
+	channel, _ := s.Channel(channelID)
 	return channel
 }
 
@@ -41,6 +42,12 @@ func FindUserByDiscriminator(s *discordgo.Session, discriminator string) *discor
 		}
 	}
 	return nil
+}
+
+//FindAllUsers : Find all users
+func FindAllUsers(s *discordgo.Session) []*discordgo.Member {
+	guild := FindFirstGuild(s)
+	return guild.Members
 }
 
 //FindChannelByID : find channel by id
