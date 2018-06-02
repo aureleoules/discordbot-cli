@@ -9,7 +9,7 @@
 </p>
 
 ## Usage
-In order to make this tool work, you have to options: 
+In order to make this tool work, you have two options: 
 * Download the source of this repository then compile it with :
 ```
 go run *go
@@ -38,3 +38,6 @@ _usage_: tokens {page}
 *  **user** : Display informations of an user 
 _usage_: user -u {username} -d {discriminator}
 *  **users** : shows all users
+
+## Author
+[Aurèle Oulès](http://aurele.oules.com)
