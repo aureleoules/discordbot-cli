@@ -7,8 +7,9 @@ import (
 	"os"
 )
 
-func pretty(data interface{}, _ error) {
-	prettyfied, _ := json.MarshalIndent(data, "", "\t")
+//Pretty : Print JSON
+func Pretty(data interface{}) {
+	prettyfied, _ := json.MarshalIndent(data, "", "  ")
 	log.Println(string(prettyfied))
 }
 
